@@ -1,26 +1,90 @@
+/* ─────────────────────────────────────────────────
+   TAILWIND v4 — single import replaces the old three
+   @tailwind base / components / utilities lines
+   ───────────────────────────────────────────────── */
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────────
+   DESIGN TOKENS  (raw CSS custom properties)
+   These are available as CSS vars everywhere,
+   including non-Tailwind places like Leaflet overrides.
+   ───────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #1a1714;   /* Page background — very dark warm brown */
+  --surface:    #2a2420;   /* Card / panel surface — slightly lighter */
+  --terracotta: #c4703f;   /* Primary accent — warm orange-brown */
+  --cream:      #e8dcc8;   /* Secondary accent — warm off-white */
+  --warm:       #f0ebe3;   /* Main body text colour */
 }
 
+/* ─────────────────────────────────────────────────
+   TAILWIND v4 THEME MAPPING
+   Maps our CSS vars → Tailwind utility classes.
+   e.g.  bg-background · text-terracotta · font-serif
+   ───────────────────────────────────────────────── */
 @theme inline {
+  /* Colours */
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface:    var(--surface);
+  --color-terracotta: var(--terracotta);
+  --color-cream:      var(--cream);
+  --color-warm:       var(--warm);
+
+  /* Typefaces — CSS vars are set by Next.js font loader in layout.tsx */
+  --font-serif: var(--font-dm-serif), "DM Serif Display", serif;
+  --font-sans:  var(--font-inter),    Inter, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─────────────────────────────────────────────────
+   BASE STYLES
+   ───────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
 }
 
 body {
+  background-color: var(--background);
+  color: var(--warm);
+  font-family: var(--font-inter), Inter, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Thin, terracotta-coloured scrollbar to match the palette */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--background); }
+::-webkit-scrollbar-thumb { background: var(--terracotta); border-radius: 2px; }
+
+/* ─────────────────────────────────────────────────
+   LEAFLET MAP OVERRIDES
+   Leaflet ships its own CSS; these rules nudge it
+   into the dark warm theme.
+   ───────────────────────────────────────────────── */
+.leaflet-container {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), Inter, sans-serif;
+  border-radius: 12px;
+}
+
+.leaflet-popup-content-wrapper {
+  background: var(--surface);
+  color: var(--warm);
+  border: 1px solid rgba(196, 112, 63, 0.3);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.leaflet-popup-tip       { background: var(--surface); }
+.leaflet-popup-content   { font-size: 13px; margin: 10px 14px; }
+
+.leaflet-control-zoom a {
+  background: var(--surface) !important;
+  color: var(--warm) !important;
+  border-color: rgba(196, 112, 63, 0.25) !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(26, 23, 20, 0.8) !important;
+  color: rgba(240, 235, 227, 0.35) !important;
+  font-size: 10px !important;
 }

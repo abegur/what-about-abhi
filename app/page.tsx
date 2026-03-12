@@ -1,65 +1,90 @@
-import Image from "next/image";
+// app/page.tsx  — Home page
+// Composed of:
+//   1. Hero       — full-viewport intro with animated name + 3-sec easter egg
+//   2. Currently  — live snapshot widget (what I'm reading, building, etc.)
+//   3. Brief About — short paragraph + call-to-action links
+"use client";
+
+import { motion }    from "framer-motion";
+import Link          from "next/link";
+import Hero          from "@/components/home/Hero";
+import Currently     from "@/components/home/Currently";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <>
+      {/* ── 1. Hero ─────────────────────────────────────── */}
+      <Hero />
+
+      {/* ── 2. Currently widget ─────────────────────────── */}
+      <Currently />
+
+      {/* ── 3. About / navigation hints ─────────────────── */}
+      <section className="px-6 py-16 max-w-6xl mx-auto border-t border-warm/5">
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.5 }}
+          className="text-terracotta text-xs tracking-[0.3em] uppercase mb-4"
+        >
+          A bit about me
+        </motion.p>
+
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.6, delay: 0.05 }}
+          className="font-serif text-4xl text-cream mb-6 max-w-xl"
+        >
+          Engineer by trade,<br />product-minded by nature.
+        </motion.h2>
+
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.5, delay: 0.12 }}
+          className="text-warm/55 text-base leading-relaxed max-w-2xl mb-10"
+        >
+          I&apos;m currently a Software Engineer II - Test at Paze, focused on
+          building quality into consumer-facing products. I&apos;m a creative thinker
+          who loves the intersection of technology and people, and I&apos;m
+          increasingly drawn to how AI can help us ship better, more intuitive
+          solutions. Outside of work you&apos;ll find me outdoors, at the gym, or
+          sharing good experiences with friends and family.
+        </motion.p>
+
+        {/* Quick-nav links to the other pages */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.5, delay: 0.18 }}
+          className="flex flex-wrap gap-3"
+        >
+          {[
+            { href: "/experience", label: "Experience"  },
+            { href: "/projects",   label: "Projects"    },
+            { href: "/hobbies",    label: "Hobbies"     },
+            { href: "/travel",     label: "Travel"      },
+          ].map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="
+                text-sm px-5 py-2 rounded-full
+                border border-warm/15 text-warm/60
+                hover:border-terracotta/50 hover:text-terracotta
+                transition-all duration-200
+              "
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+              {link.label} →
+            </Link>
+          ))}
+        </motion.div>
+      </section>
+    </>
   );
 }

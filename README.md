@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# what-about-abhi
 
-## Getting Started
+A personal portfolio website built with AI as a collaborator — part learning experiment, part product showcase.
 
-First, run the development server:
+This project was built to serve a dual purpose: showcase my background as a software engineer and demonstrate product thinking. Rather than using a template, I worked with Claude (Anthropic's AI) to design and build the entire site from scratch, treating it as a real product with a real user (you).
+
+The full story behind why this exists is on the [What Is This?](/app/what-is-this/page.tsx) page of the site.
+
+> **Hosting:** Domain purchase pending. Will be live soon.
+
+---
+
+## Pages
+
+| Page | Description |
+|------|-------------|
+| `/` | Home — hero, "Currently" widget, and bio |
+| `/experience` | Work history and education timeline |
+| `/projects` | Selected personal and professional projects |
+| `/hobbies` | A few things I do outside of work |
+| `/travel` | Countries visited and wishlist map |
+| `/what-is-this` | The honest story behind why this site exists |
+
+---
+
+## Tech Stack
+
+| Technology | Role |
+|------------|------|
+| [Next.js](https://nextjs.org) | Framework — App Router, server components |
+| [TypeScript](https://www.typescriptlang.org) | Type safety across the codebase |
+| [Tailwind CSS](https://tailwindcss.com) | Utility-first styling with a custom warm dark theme |
+| [Framer Motion](https://www.framer.com/motion/) | Animations and scroll-triggered effects |
+| [React Leaflet](https://react-leaflet.js.org) | Interactive travel map |
+| [Claude AI](https://www.anthropic.com) | AI collaborator for design, code, and copy |
+| [Vercel](https://vercel.com) | Deployment and edge hosting |
+
+---
+
+## Running Locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the site.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+```
+app/
+  page.tsx              # Home
+  experience/page.tsx   # Experience timeline
+  projects/page.tsx     # Projects grid
+  hobbies/page.tsx      # Hobbies
+  travel/page.tsx       # Travel map
+  what-is-this/page.tsx # Meta page
+components/
+  home/                 # Hero, Currently widget
+  experience/           # Timeline
+  projects/             # Project cards
+  travel/               # Leaflet map
+lib/
+  data.ts               # All site content lives here
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Updating Content
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+All content (experience, projects, hobbies, travel, currently widget) is managed from a single file: **`lib/data.ts`**. No need to touch any component files for routine content updates.
