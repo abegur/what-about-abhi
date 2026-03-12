@@ -64,6 +64,12 @@ body {
   background: var(--background);
   font-family: var(--font-inter), Inter, sans-serif;
   border-radius: 12px;
+  cursor: default !important;
+}
+
+.leaflet-grab,
+.leaflet-dragging .leaflet-grab {
+  cursor: default !important;
 }
 
 .leaflet-popup-content-wrapper {

@@ -19,6 +19,7 @@ interface Project {
   tags:            string[];
   status:          string;
   link:            string;
+  secondLink?:     { label: string; href: string };
 }
 
 export default function ProjectCard({ project }: { project: Project }) {
@@ -82,32 +83,43 @@ export default function ProjectCard({ project }: { project: Project }) {
               </p>
             </div>
 
-            {/* Bottom row: status + view link */}
+            {/* Bottom row: status + links */}
             <div className="flex items-center justify-between">
               <span className="text-background/50 text-xs uppercase tracking-wider">
                 {project.status}
               </span>
-              {project.link && project.link !== "#" && (
-                project.link.startsWith("http") ? (
-                  <a
-                    href={project.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="text-background text-sm font-medium hover:underline underline-offset-2"
-                  >
-                    View →
-                  </a>
-                ) : (
+              <div className="flex items-center gap-3">
+                {project.secondLink && (
                   <Link
-                    href={project.link}
+                    href={project.secondLink.href}
                     onClick={(e) => e.stopPropagation()}
-                    className="text-background text-sm font-medium hover:underline underline-offset-2"
+                    className="text-background/70 text-sm hover:underline underline-offset-2"
                   >
-                    View →
+                    {project.secondLink.label}
                   </Link>
-                )
-              )}
+                )}
+                {project.link && project.link !== "#" && (
+                  project.link.startsWith("http") ? (
+                    <a
+                      href={project.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-background text-sm font-medium hover:underline underline-offset-2"
+                    >
+                      View →
+                    </a>
+                  ) : (
+                    <Link
+                      href={project.link}
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-background text-sm font-medium hover:underline underline-offset-2"
+                    >
+                      View →
+                    </Link>
+                  )
+                )}
+              </div>
             </div>
           </motion.div>
         )}

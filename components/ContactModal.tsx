@@ -10,8 +10,7 @@ import { motion, AnimatePresence }      from "framer-motion";
 // Contact detail rows — swap in real info later
 const contactDetails = [
   { label: "Email",    value: "abhibegur2@gmail.com",                    href: "mailto:abhibegur2@gmail.com",                                  icon: "✉️" },
-  { label: "LinkedIn", value: "linkedin.com/in/abhinav-begur-1a9197156", href: "https://www.linkedin.com/in/abhinav-begur-1a9197156/",          icon: "💼" },
-  { label: "Phone",    value: "+1 (408) 607-6300",                       href: null,                                                           icon: "📱" },
+  { label: "LinkedIn", value: "Abhi Begur",                           href: "https://www.linkedin.com/in/abhinav-begur-1a9197156/",          icon: "💼" },
   { label: "City",     value: "San Francisco, CA",                       href: null,                                                           icon: "📍" },
 ];
 

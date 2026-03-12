@@ -47,29 +47,24 @@ export default function Timeline() {
                 hover:border-terracotta/20 transition-colors duration-300
               "
             >
-              {/* Top row: company + badge + period */}
-              <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
-                <div>
-                  <p className="text-warm/40 text-xs uppercase tracking-widest mb-1">
+              {/* Top row: company + badge, then title + period */}
+              <div className="mb-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="text-warm/40 text-xs uppercase tracking-widest">
                     {exp.company}
                   </p>
-                  <h3 className="font-serif text-xl text-cream whitespace-pre-line">{exp.title}</h3>
-                </div>
-
-                <div className="flex flex-col items-end gap-1.5 shrink-0">
-                  {/* Type badge */}
                   <span
                     className={`
                       text-[10px] px-2 py-0.5 rounded-full border
-                      tracking-wider uppercase
+                      tracking-wider uppercase shrink-0
                       ${typeBadgeClass[exp.type] ?? typeBadgeClass["Full-time"]}
                     `}
                   >
                     {exp.type}
                   </span>
-                  {/* Period */}
-                  <span className="text-warm/35 text-xs">{exp.period}</span>
                 </div>
+                <h3 className="font-serif text-xl text-cream whitespace-pre-line mb-1">{exp.title}</h3>
+                <span className="text-warm/35 text-xs">{exp.period}</span>
               </div>
 
               {/* Location */}

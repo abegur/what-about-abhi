@@ -7,6 +7,15 @@
 export const experiences = [
   {
     id: 1,
+    title: "Bachelors in Business Management Economics\nMinor in Computer Science",
+    company: "University of California, Santa Cruz",
+    period: "September 2017 – June 2021",
+    location: "Santa Cruz, CA",
+    description: "Recipient of the Dean's Honor Award (2017–2021).",
+    type: "Education",
+  },
+  {
+    id: 2,
     title: "Software Engineer II - Test",
     company: "Early Warning Services",
     period: "June 2025 – Present",
@@ -15,7 +24,7 @@ export const experiences = [
     type: "Full-time",
   },
   {
-    id: 2,
+    id: 3,
     title: "Software Engineer in Test",
     company: "Veeva Systems",
     period: "July 2021 – June 2025",
@@ -24,7 +33,7 @@ export const experiences = [
     type: "Full-time",
   },
   {
-    id: 3,
+    id: 4,
     title: "Programmer",
     company: "LEEPS Lab",
     period: "November 2020 – June 2021",
@@ -33,22 +42,13 @@ export const experiences = [
     type: "Research",
   },
   {
-    id: 4,
+    id: 5,
     title: "TA Grader",
     company: "UC Santa Cruz",
     period: "January 2021 – April 2021",
     location: "Santa Cruz, CA",
     description: "Helped grade assignments and exams for The Economics of Electronic Commerce, working alongside the professor and two PhD TAs to keep things running smoothly.",
     type: "Academic",
-  },
-  {
-    id: 5,
-    title: "Bachelors in Business Management Economics\nMinor in Computer Science",
-    company: "University of California, Santa Cruz",
-    period: "September 2017 – June 2021",
-    location: "Santa Cruz, CA",
-    description: "Recipient of the Dean's Honor Award (2017–2021).",
-    type: "Education",
   },
 ];
 
@@ -76,7 +76,8 @@ export const projects = [
       "Built using Claude as an AI collaborator from the ground up, this portfolio is both the product and the proof of concept. It explores how AI can be leveraged to ship real, polished software, from design decisions to deployment. Want the full story behind it? Head over to the What Is This page.",
     tags: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion", "Claude AI", "Vercel"],
     status: "Live",
-    link: "/what-is-this",
+    link: "https://github.com/abegur/what-about-abhi",
+    secondLink: { label: "The story behind it →", href: "/what-is-this" },
   },
   {
     id: 2,

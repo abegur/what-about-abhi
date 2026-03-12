@@ -36,8 +36,8 @@ export default function ExperiencePage() {
           transition={{ duration: 0.5, delay: 0.16 }}
           className="text-warm/50 text-lg max-w-xl leading-relaxed"
         >
-          A chronological look at the roles and institutions that have shaped
-          how I think and build.
+          My educational background and the roles that have shaped how I
+          think, build, and collaborate.
         </motion.p>
 
         {/* Decorative divider */}

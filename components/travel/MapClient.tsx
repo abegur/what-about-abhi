@@ -66,14 +66,15 @@ export default function MapClient() {
       center={[20, 10]}
       zoom={2}
       minZoom={2}
-      // All interaction disabled — map is purely visual
+      // Scroll wheel zoom disabled to avoid interfering with page scroll
+      // Dragging enabled so mobile users can pan the map
       zoomControl={false}
       scrollWheelZoom={false}
-      dragging={false}
+      dragging={true}
       doubleClickZoom={false}
-      touchZoom={false}
+      touchZoom={true}
       keyboard={false}
-      style={{ height: "500px", width: "100%", borderRadius: "16px", cursor: "default" }}
+      style={{ height: "500px", width: "100%", borderRadius: "16px" }}
     >
       {/* CartoDB Dark Matter — dark basemap, no API key required */}
       <TileLayer
