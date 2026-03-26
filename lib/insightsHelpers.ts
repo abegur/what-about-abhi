@@ -56,7 +56,6 @@ export function generateInsights(data: AnalyticsData): InsightCard[] {
       hover_name_trick: 'the 3-second name hover',
       hidden_dot: 'the hidden bottom-right dot',
       bottom_message: 'the footer scroll message',
-      what_is_this_visit: 'the What Is This? page',
     }
     const hardestLabel = hardestEgg ? (eggLabels[hardestEgg.type] ?? hardestEgg.type) : 'the hidden dot'
     cards.push({

@@ -11,7 +11,6 @@ const eggMeta: Record<string, { label: string; icon: string; desc: string }> = {
   hover_name_trick: { label: 'Name Hover', icon: '👋', desc: '3-second hover on name' },
   hidden_dot:       { label: 'Hidden Dot', icon: '⚫', desc: 'Bottom-right dot click' },
   bottom_message:   { label: 'Bottom Scroll', icon: '✦', desc: 'Scrolled to footer' },
-  what_is_this_visit: { label: 'What Is This?', icon: '🔍', desc: 'Visited /what-is-this' },
 }
 
 export default function EasterEggCounts({ data }: Props) {

@@ -32,7 +32,6 @@ export async function GET(req: NextRequest) {
       allEasterEggs,
       allNavClicks,
       allSectionViews,
-      allWhatIsThis,
     ] = await Promise.all([
       supabaseAdmin.from('page_events').select('page_path,session_id,created_at').eq('event_name', 'page_view'),
       supabaseAdmin.from('page_events').select('page_path,metadata,session_id').eq('event_name', 'page_exit'),
@@ -40,7 +39,6 @@ export async function GET(req: NextRequest) {
       supabaseAdmin.from('page_events').select('metadata,session_id,created_at').eq('event_name', 'easter_egg'),
       supabaseAdmin.from('page_events').select('metadata').eq('event_name', 'nav_click'),
       supabaseAdmin.from('page_events').select('metadata').eq('event_name', 'section_view'),
-      supabaseAdmin.from('page_events').select('session_id,created_at').eq('event_name', 'what_is_this_visit'),
     ])
 
     const pageViews = allPageViews.data ?? []
@@ -102,8 +100,6 @@ export async function GET(req: NextRequest) {
       const type = ev.metadata?.type as string
       if (type) eggMap.set(type, (eggMap.get(type) ?? 0) + 1)
     }
-    // Count what_is_this as an easter egg too
-    eggMap.set('what_is_this_visit', allWhatIsThis.data?.length ?? 0)
 
     const easter_egg_counts: EasterEggCount[] = Array.from(eggMap.entries())
       .map(([type, count]) => ({ type, count }))
