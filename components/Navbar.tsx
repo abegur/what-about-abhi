@@ -12,6 +12,7 @@ import Link                           from "next/link";
 import { usePathname }                from "next/navigation";
 import { motion, AnimatePresence }    from "framer-motion";
 import ContactModal                   from "@/components/ContactModal";
+import { track }                      from "@/lib/analytics";
 
 // Every route shown in the nav
 const navLinks = [
@@ -20,6 +21,7 @@ const navLinks = [
   { href: "/projects",     label: "Projects"      },
   { href: "/hobbies",      label: "Hobbies"       },
   { href: "/travel",       label: "Travel"        },
+  { href: "/insights",     label: "Insights"      },
   { href: "/what-is-this", label: "What Is This?" },
 ];
 
@@ -66,6 +68,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
+                onClick={() => track('nav_click', pathname, { destination: link.href })}
                 className={`
                   text-sm tracking-wide transition-colors duration-200
                   ${pathname === link.href
@@ -79,7 +82,7 @@ export default function Navbar() {
 
             {/* Contact — opens modal, not a page */}
             <button
-              onClick={() => setContactOpen(true)}
+              onClick={() => { track('contact_open', pathname, {}); setContactOpen(true); }}
               className="
                 text-sm px-4 py-1.5
                 border border-terracotta/60 text-terracotta rounded-full
@@ -128,6 +131,7 @@ export default function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href}
+                    onClick={() => track('nav_click', pathname, { destination: link.href })}
                     className={`
                       py-3 text-sm tracking-wide
                       border-b border-warm/5
@@ -142,7 +146,7 @@ export default function Navbar() {
                 ))}
 
                 <button
-                  onClick={() => { setContactOpen(true); setMenuOpen(false); }}
+                  onClick={() => { track('contact_open', pathname, {}); setContactOpen(true); setMenuOpen(false); }}
                   className="
                     mt-3 text-sm px-4 py-2
                     border border-terracotta/60 text-terracotta rounded-full

@@ -9,10 +9,11 @@ import type { Metadata } from "next";
 import { DM_Serif_Display, Inter } from "next/font/google";
 import "./globals.css";
 
-import Navbar          from "@/components/Navbar";
-import ScrollProgress  from "@/components/ScrollProgress";
-import BottomEasterEgg from "@/components/BottomEasterEgg";
-import HiddenEasterEgg from "@/components/HiddenEasterEgg";
+import Navbar             from "@/components/Navbar";
+import ScrollProgress    from "@/components/ScrollProgress";
+import BottomEasterEgg   from "@/components/BottomEasterEgg";
+import HiddenEasterEgg   from "@/components/HiddenEasterEgg";
+import AnalyticsProvider from "@/components/AnalyticsProvider";
 
 // ── Google Fonts via Next.js font loader ─────────────────────────────────────
 // next/font downloads the font at build time and self-hosts it —
@@ -51,6 +52,9 @@ export default function RootLayout({
         // var(--font-inter) so Tailwind's font-serif / font-sans classes work.
         className={`${dmSerif.variable} ${inter.variable} antialiased`}
       >
+        {/* Analytics — non-blocking page view tracking */}
+        <AnalyticsProvider />
+
         {/* Thin terracotta bar at the very top tracking scroll progress */}
         <ScrollProgress />
 

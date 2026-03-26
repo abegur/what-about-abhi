@@ -8,6 +8,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, useAnimation, AnimatePresence }    from "framer-motion";
+import { track }                                    from "@/lib/analytics";
 
 // Messages that randomly appear after the 3-second hover
 const easterEggMessages = [
@@ -38,6 +39,7 @@ export default function Hero() {
       const msg = easterEggMessages[Math.floor(Math.random() * easterEggMessages.length)];
       setEasterEggMsg(msg);
       setEasterEggVisible(true);
+      track('easter_egg', '/', { type: 'hover_name_trick' });
 
       // Play a quick wiggle on the name element
       await shakeControls.start({
@@ -56,7 +58,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="min-h-screen flex items-center px-6 relative overflow-hidden">
+    <section id="hero-section" className="min-h-screen flex items-center px-6 relative overflow-hidden">
 
       {/* Ambient glow blobs in the background — pure decoration */}
       <div aria-hidden="true" className="absolute inset-0 pointer-events-none">

@@ -7,6 +7,7 @@
 import { useState, useCallback }   from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { funFacts }                from "@/lib/data";
+import { track }                   from "@/lib/analytics";
 
 export default function HiddenEasterEgg() {
   const [fact, setFact] = useState<string | null>(null);
@@ -15,6 +16,7 @@ export default function HiddenEasterEgg() {
     // Pick a random fun fact from the list in data.ts
     const random = funFacts[Math.floor(Math.random() * funFacts.length)];
     setFact(random);
+    track('easter_egg', window.location.pathname, { type: 'hidden_dot' });
     // Auto-dismiss after 4 seconds
     setTimeout(() => setFact(null), 4000);
   }, []);

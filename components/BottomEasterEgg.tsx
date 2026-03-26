@@ -4,16 +4,27 @@
 // useInView detects when this element enters the viewport.
 "use client";
 
-import { useRef }              from "react";
+import { useRef, useEffect }   from "react";
 import { motion, useInView }   from "framer-motion";
+import { track }               from "@/lib/analytics";
 
 export default function BottomEasterEgg() {
   // Attach a ref so Framer Motion can observe when this element is visible
   const ref = useRef<HTMLDivElement>(null);
+  // Guard against re-firing on the same page visit (isInView toggles on scroll)
+  const firedRef = useRef(false);
 
   // once: false means the animation re-triggers every time the user scrolls
   // to the bottom (not just the first time)
   const isInView = useInView(ref, { once: false, margin: "0px" });
+
+  // Track the easter egg once per page mount (resets on navigation)
+  useEffect(() => {
+    if (isInView && !firedRef.current) {
+      firedRef.current = true;
+      track('easter_egg', window.location.pathname, { type: 'bottom_message' });
+    }
+  }, [isInView]);
 
   return (
     <div ref={ref} className="py-16 flex flex-col items-center gap-3">

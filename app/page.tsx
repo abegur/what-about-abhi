@@ -5,12 +5,47 @@
 //   3. Brief About — short paragraph + call-to-action links
 "use client";
 
+import { useEffect } from "react";
 import { motion }    from "framer-motion";
 import Link          from "next/link";
 import Hero          from "@/components/home/Hero";
 import Currently     from "@/components/home/Currently";
+import { useScrollDepth } from "@/hooks/useScrollDepth";
+import { track }          from "@/lib/analytics";
 
 export default function Home() {
+  useScrollDepth('/');
+
+  // Section visibility tracking
+  useEffect(() => {
+    const sections = [
+      { id: 'hero-section',      name: 'hero'      },
+      { id: 'currently-section', name: 'currently' },
+      { id: 'about-section',     name: 'about'     },
+    ];
+
+    const observers: IntersectionObserver[] = [];
+    const fired = new Set<string>();
+
+    sections.forEach(({ id, name }) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const obs = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting && !fired.has(name)) {
+            fired.add(name);
+            track('section_view', '/', { section: name });
+          }
+        },
+        { threshold: 0.3 }
+      );
+      obs.observe(el);
+      observers.push(obs);
+    });
+
+    return () => observers.forEach((obs) => obs.disconnect());
+  }, []);
+
   return (
     <>
       {/* ── 1. Hero ─────────────────────────────────────── */}
@@ -20,7 +55,7 @@ export default function Home() {
       <Currently />
 
       {/* ── 3. About / navigation hints ─────────────────── */}
-      <section className="px-6 py-16 max-w-6xl mx-auto border-t border-warm/5">
+      <section id="about-section" className="px-6 py-16 max-w-6xl mx-auto border-t border-warm/5">
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}

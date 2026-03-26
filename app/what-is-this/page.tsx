@@ -1,9 +1,11 @@
 // app/what-is-this/page.tsx  — Meta page explaining the portfolio itself
 "use client";
 
-import { motion } from "framer-motion";
-import Link       from "next/link";
-import PageWrapper from "@/components/PageWrapper";
+import { useEffect } from "react";
+import { motion }    from "framer-motion";
+import Link          from "next/link";
+import PageWrapper   from "@/components/PageWrapper";
+import { track }     from "@/lib/analytics";
 
 // ── Tech stack entries ────────────────────────────────────────────────────────
 const stack = [
@@ -37,6 +39,10 @@ const decisions = [
 ];
 
 export default function WhatIsThisPage() {
+  useEffect(() => {
+    track('what_is_this_visit', '/what-is-this', {});
+  }, []);
+
   return (
     <PageWrapper>
       {/* ── Page hero ─────────────────────────────────── */}

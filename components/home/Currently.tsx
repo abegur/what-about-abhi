@@ -9,7 +9,7 @@ import { currentlyItems } from "@/lib/data";
 
 export default function Currently() {
   return (
-    <section className="px-6 py-20 max-w-6xl mx-auto">
+    <section id="currently-section" className="px-6 py-20 max-w-6xl mx-auto">
 
       {/* Section header */}
       <motion.p
