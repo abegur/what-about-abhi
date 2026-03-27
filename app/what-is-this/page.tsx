@@ -101,29 +101,15 @@ export default function WhatIsThisPage() {
 
           <div className="space-y-4 text-warm/60 leading-relaxed">
             <p>
-              After spending years working alongside some genuinely talented Product Managers,
-              something became really clear to me: I want to be closer to the product and the
-              people using it. I love working with people. I obsess over the details. I can
-              take something deeply technical and explain it to anyone in the room. Whether
-              that&apos;s a PM role, a Solutions Engineer, or a Customer Engineer, what draws
-              me in is the same thing: work that lives at the intersection of technical depth
-              and real customer impact.
+              After years building alongside product teams, something became clear: I think
+              like a product person, even when my title said otherwise. I obsess over details
+              and care about the user experience more than my job description ever required.
             </p>
             <p>
-              Now, do I have a traditional PM or client-facing background? On paper, maybe
-              not. But companies see &quot;Software Engineer&quot; and assume I can&apos;t hold
-              a conversation with a customer, and that&apos;s just not true. Every single day
-              as an engineer I&apos;ve been collaborating with cross-functional teams,
-              partnering with PMs, and bridging the gap between technical and non-technical
-              people. Connecting with people is just what I do. Give me a chance. I was a
-              marketing intern doing direct sales (probably the hardest job I&apos;ve ever had)
-              and a Foot Locker retail associate, and I loved every second of it. So yeah, it
-              might&apos;ve been a while ago, but the ability to connect with people
-              doesn&apos;t expire.
-            </p>
-            <p>
-              The best way to prove I can think like a product person is to actually be one.
-              So what did I do? I built a product. A whole one. From scratch.
+              So instead of just writing that on a resume, I built something to show it. This
+              whole site is the project. Every design decision, every interaction, every line
+              of code, and yes, the custom analytics tracking whether any of this actually
+              works.
             </p>
 
             {/* PM framework callout */}
@@ -131,7 +117,7 @@ export default function WhatIsThisPage() {
               {[
                 { label: "My product",    value: "This website"                         },
                 { label: "My clients",    value: "You (yes, you reading this right now)" },
-                { label: "My deliverable", value: "Figma design files (coming soon, I promise)" },
+                { label: "My deliverable", value: "A live analytics dashboard, built from scratch" },
                 { label: "Success metric", value: "Whether this leads to an opportunity" },
               ].map((item, i) => (
                 <motion.div
@@ -149,13 +135,12 @@ export default function WhatIsThisPage() {
             </div>
 
             <p>
-              Is it a little unconventional? Absolutely. Does it showcase that I can think
-              like a product person, ship like an engineer, and hustle like someone with a
-              point to prove? I&apos;d like to think so.
+              Is it unconventional? A little. But whatever role brought you here, I&apos;d
+              like to think this says more than a resume ever could.
             </p>
             <p>
-              And hey, if you&apos;re here reading this page, that means the product worked.
-              You&apos;re the client. Welcome. I&apos;m glad you made it this far.{" "}
+              And if you&apos;re reading this page, the product worked. You&apos;re the user.
+              Welcome. I&apos;m glad you made it this far.{" "}
               <Link
                 href="/"
                 className="text-terracotta hover:underline underline-offset-2 transition-colors"
@@ -218,10 +203,17 @@ export default function WhatIsThisPage() {
 
           <div className="space-y-4 text-warm/60 leading-relaxed">
             <p>
-              A good PM understands their users, so I built the tooling to actually do that.
-              The site tracks page views, scroll depth, nav clicks, and even whether visitors
-              find the easter eggs. All custom-built on top of Supabase, no third-party
-              trackers, no cookies.
+              I wanted to actually understand how people use this site. So I built the tooling
+              to do that. It tracks page views, scroll depth, nav clicks, and even whether
+              visitors find the easter eggs. All custom-built on top of Supabase, no
+              third-party trackers, no cookies.
+            </p>
+            <p>
+              The goal is to close the feedback loop. If people are spending a lot of time on
+              a specific project, that&apos;s a signal. Maybe I highlight that work more in a
+              conversation, or put it front and center on my resume. If most visitors drop off
+              before reaching a certain section, something isn&apos;t landing. The data tells
+              me what&apos;s working and what to fix.
             </p>
             <p>
               The results are public.{" "}
