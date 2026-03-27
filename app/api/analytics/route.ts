@@ -37,8 +37,8 @@ export async function GET(req: NextRequest) {
       supabaseAdmin.from('page_events').select('page_path,metadata,session_id').eq('event_name', 'page_exit'),
       supabaseAdmin.from('page_events').select('metadata,session_id').eq('event_name', 'scroll_depth'),
       supabaseAdmin.from('page_events').select('metadata,session_id,created_at').eq('event_name', 'easter_egg'),
-      supabaseAdmin.from('page_events').select('metadata').eq('event_name', 'nav_click'),
-      supabaseAdmin.from('page_events').select('metadata').eq('event_name', 'section_view'),
+      supabaseAdmin.from('page_events').select('metadata,session_id').eq('event_name', 'nav_click'),
+      supabaseAdmin.from('page_events').select('metadata,session_id').eq('event_name', 'section_view'),
     ])
 
     const pageViews = allPageViews.data ?? []
@@ -48,12 +48,41 @@ export async function GET(req: NextRequest) {
     const navClickEvents = allNavClicks.data ?? []
     const sectionViewEvents = allSectionViews.data ?? []
 
+    // ── Unique sessions + session filter ─────────────────────────────────────
+    const allSessions = await supabaseAdmin.from('page_events').select('session_id,page_path,created_at,event_name,metadata').order('created_at', { ascending: false }).limit(5000)
+    const allEvents = allSessions.data ?? []
+
+    // Filter out sessions shorter than 5 seconds (likely bots or accidental hits)
+    const SESSION_MIN_MS = 5000
+    const sessionBounds = new Map<string, { first: number; last: number }>()
+    for (const ev of allEvents) {
+      const t = new Date(ev.created_at).getTime()
+      const b = sessionBounds.get(ev.session_id)
+      if (!b) sessionBounds.set(ev.session_id, { first: t, last: t })
+      else { if (t < b.first) b.first = t; if (t > b.last) b.last = t }
+    }
+    const validSessionIds = new Set(
+      Array.from(sessionBounds.entries())
+        .filter(([, b]) => b.last - b.first >= SESSION_MIN_MS)
+        .map(([id]) => id)
+    )
+    const filteredEvents       = allEvents.filter(e => validSessionIds.has(e.session_id))
+    const filteredPageViews    = pageViews.filter(e => validSessionIds.has(e.session_id))
+    const filteredPageExits    = pageExits.filter(e => validSessionIds.has(e.session_id))
+    const filteredScrollDepth  = scrollDepthEvents.filter(e => validSessionIds.has(e.session_id))
+    const filteredEasterEggs   = easterEggEvents.filter(e => validSessionIds.has(e.session_id))
+    const filteredNavClicks    = navClickEvents.filter(e => validSessionIds.has(e.session_id))
+    const filteredSectionViews = sectionViewEvents.filter(e => validSessionIds.has(e.session_id))
+
+    const unique_sessions = validSessionIds.size
+    const total_views = filteredPageViews.length
+
     // ── Page views by day (last 30 days) ──────────────────────────────────────
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
     const viewsByDayMap = new Map<string, number>()
-    for (const ev of pageViews) {
+    for (const ev of filteredPageViews) {
       if (!ev.created_at) continue
       const d = new Date(ev.created_at)
       if (d < thirtyDaysAgo) continue
@@ -66,24 +95,16 @@ export async function GET(req: NextRequest) {
 
     // ── Page views by path ────────────────────────────────────────────────────
     const viewsByPathMap = new Map<string, number>()
-    for (const ev of pageViews) {
+    for (const ev of filteredPageViews) {
       viewsByPathMap.set(ev.page_path, (viewsByPathMap.get(ev.page_path) ?? 0) + 1)
     }
     const page_views_by_path: PageViewsByPath[] = Array.from(viewsByPathMap.entries())
       .sort(([, a], [, b]) => b - a)
       .map(([page_path, views]) => ({ page_path, views }))
 
-    // ── Unique sessions ───────────────────────────────────────────────────────
-    const allSessions = await supabaseAdmin.from('page_events').select('session_id,page_path,created_at,event_name,metadata').order('created_at', { ascending: false }).limit(5000)
-    const allEvents = allSessions.data ?? []
-
-    const sessionSet = new Set(allEvents.map((e) => e.session_id))
-    const unique_sessions = sessionSet.size
-    const total_views = pageViews.length
-
     // ── Scroll depth distribution ─────────────────────────────────────────────
     const depthMap = new Map<number, number>()
-    for (const ev of scrollDepthEvents) {
+    for (const ev of filteredScrollDepth) {
       const depth = ev.metadata?.depth as number
       if ([25, 50, 75, 100].includes(depth)) {
         depthMap.set(depth, (depthMap.get(depth) ?? 0) + 1)
@@ -96,7 +117,7 @@ export async function GET(req: NextRequest) {
 
     // ── Easter egg counts ─────────────────────────────────────────────────────
     const eggMap = new Map<string, number>()
-    for (const ev of easterEggEvents) {
+    for (const ev of filteredEasterEggs) {
       const type = ev.metadata?.type as string
       if (type) eggMap.set(type, (eggMap.get(type) ?? 0) + 1)
     }
@@ -106,7 +127,7 @@ export async function GET(req: NextRequest) {
 
     // ── Avg time by path ──────────────────────────────────────────────────────
     const timeByPath = new Map<string, number[]>()
-    for (const ev of pageExits) {
+    for (const ev of filteredPageExits) {
       const secs = ev.metadata?.time_spent_seconds as number
       if (typeof secs === 'number' && secs >= 0) {
         const arr = timeByPath.get(ev.page_path) ?? []
@@ -121,7 +142,7 @@ export async function GET(req: NextRequest) {
 
     // ── Nav clicks ────────────────────────────────────────────────────────────
     const navMap = new Map<string, number>()
-    for (const ev of navClickEvents) {
+    for (const ev of filteredNavClicks) {
       const dest = ev.metadata?.destination as string
       if (dest) navMap.set(dest, (navMap.get(dest) ?? 0) + 1)
     }
@@ -131,7 +152,7 @@ export async function GET(req: NextRequest) {
 
     // ── Section views ─────────────────────────────────────────────────────────
     const sectionMap = new Map<string, number>()
-    for (const ev of sectionViewEvents) {
+    for (const ev of filteredSectionViews) {
       const section = ev.metadata?.section as string
       if (section) sectionMap.set(section, (sectionMap.get(section) ?? 0) + 1)
     }
@@ -146,7 +167,7 @@ export async function GET(req: NextRequest) {
       event_count: number
     }>()
 
-    for (const ev of allEvents) {
+    for (const ev of filteredEvents) {
       const sid = ev.session_id
       if (!sessionDataMap.has(sid)) {
         sessionDataMap.set(sid, {

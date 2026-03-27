@@ -6,7 +6,7 @@ This project was built to serve a dual purpose: showcase my background as a soft
 
 The full story behind why this exists is on the [What Is This?](/app/what-is-this/page.tsx) page of the site.
 
-> **Hosting:** Domain purchase pending. Will be live soon.
+> **Live at:** [abhibegur.com](https://abhibegur.com)
 
 ---
 

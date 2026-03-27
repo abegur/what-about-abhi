@@ -14,6 +14,7 @@ const stack = [
   { name: "Tailwind CSS",    role: "Utility-first styling with a custom theme"    },
   { name: "Framer Motion",   role: "All animations and scroll-triggered effects"  },
   { name: "React Leaflet",   role: "Interactive travel map"                       },
+  { name: "Supabase",        role: "Analytics database (stores all visitor event data)" },
   { name: "Claude AI",       role: "AI collaborator for design, code, and copy"   },
   { name: "Vercel",          role: "Deployment and edge hosting"                  },
 ];
@@ -199,6 +200,39 @@ export default function WhatIsThisPage() {
               </motion.li>
             ))}
           </ul>
+        </motion.section>
+
+        {/* ── Under the hood ───────────────────────────── */}
+        <motion.section
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.55 }}
+        >
+          <p className="text-terracotta text-xs tracking-[0.3em] uppercase mb-4">
+            Under the hood
+          </p>
+          <h2 className="font-serif text-3xl text-cream mb-6">
+            I built real analytics for this. No Google, no trackers.
+          </h2>
+
+          <div className="space-y-4 text-warm/60 leading-relaxed">
+            <p>
+              A good PM understands their users, so I built the tooling to actually do that.
+              The site tracks page views, scroll depth, nav clicks, and even whether visitors
+              find the easter eggs. All custom-built on top of Supabase, no third-party
+              trackers, no cookies.
+            </p>
+            <p>
+              The results are public.{" "}
+              <Link
+                href="/insights"
+                className="text-terracotta hover:underline underline-offset-2 transition-colors"
+              >
+                You can see what the data says on the Insights page.
+              </Link>
+            </p>
+          </div>
         </motion.section>
 
         {/* ── Design decisions ─────────────────────────── */}

@@ -5,7 +5,7 @@
 // Uses React state (not just CSS hover) so we can use AnimatePresence.
 "use client";
 
-import { useState }                   from "react";
+import { useState, useRef }            from "react";
 import { motion, AnimatePresence }    from "framer-motion";
 import Link                           from "next/link";
 
@@ -24,14 +24,16 @@ interface Project {
 
 export default function ProjectCard({ project }: { project: Project }) {
   const [hovered, setHovered] = useState(false);
+  const isMouseRef = useRef(false);
 
   return (
     <motion.div
       // Subtle lift on hover — the overlay provides the main detail reveal
       whileHover={{ y: -4 }}
       transition={{ type: "spring", stiffness: 300, damping: 28 }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onPointerEnter={(e) => { if (e.pointerType === 'mouse') { isMouseRef.current = true; setHovered(true) } }}
+      onPointerLeave={(e) => { if (e.pointerType === 'mouse') { isMouseRef.current = false; setHovered(false) } }}
+      onClick={() => { if (!isMouseRef.current) setHovered(h => !h) }}
       className="relative bg-surface rounded-2xl overflow-hidden border border-warm/5 h-64 cursor-pointer"
     >
       {/* ── Default (non-hovered) view ───────────────── */}
