@@ -18,6 +18,7 @@ A personal portfolio website built to demonstrate product thinking and engineeri
 | `/insights` | Insights | Public analytics summary with narrative insight cards |
 | `/what-is-this` | What Is This? | The story behind the portfolio and how it was built |
 | `/dashboard` | Dashboard | Private analytics dashboard (password-protected) |
+| `/exercise-tracker` | Exercise Tracker | Public half marathon training dashboard with owner-only workout logging |
 
 ---
 
@@ -153,6 +154,103 @@ Managed from `lib/data.ts`:
 - Hobby entries
 - Travel data (countries visited, wishlist)
 - Currently widget rows (emoji, label, value)
+
+---
+
+## Exercise Tracker (`/exercise-tracker`)
+
+A self-contained half marathon training dashboard. Publicly readable. Workout logging and AI recalibration are gated behind a PIN stored in `sessionStorage`.
+
+**Goal:** Monterey Half Marathon, November 8, 2026. Sub-2:00 finish (9:09/mile pace).
+
+### Countdown Banner
+- Days until race day
+- Current training week number (Week 1 starts June 2, 2026)
+- Current phase label: Base / Build / Peak / Taper / Race
+- Progress bar showing how far through the 24-week plan
+
+### Progress Stats
+Four KPI cards matching the site's dashboard card style:
+- Total miles logged (all time, completed runs only)
+- Runs this week: completed / planned
+- Lifts this week: completed / planned
+- Weeks remaining until race
+
+### This Week
+- Fetches the current week's row from `training_plan` by matching today's date
+- Planned runs and lifts shown side by side as session cards
+- Each card shows day, workout type, target miles or lift day
+- Status badges: Planned (gray) / Completed (green) / Skipped (red)
+- Owner only: **Log Run** and **Log Lift** buttons appear inline when unlocked
+
+### Log Run Form
+Inline form (owner only). Fields:
+- Status toggle: Completed or Skipped
+- Date picker (defaults to today)
+- Miles (decimal, step 0.1)
+- Pace input (MM:SS format, validated client-side)
+- Hides miles and pace fields when status is Skipped
+
+### Log Lift Form
+Inline form (owner only). Fields:
+- Status toggle: Completed or Skipped
+- Date picker (defaults to today)
+- Lift day selector: Day A (Power), Day B (Strength), Day C (Hypertrophy)
+
+### Mileage Chart
+- Recharts ComposedChart: bars for actual miles, dashed line for weekly target
+- Covers the last 8 weeks that have started
+- Bars are colored by phase: blue (base), green (build), orange (peak), yellow (taper)
+- Empty state shown before training begins
+
+### AI Recalibration (owner only)
+- Button is disabled until at least 3 workouts are logged for the current week
+- On click: sends week performance data to `/api/recalibrate`, which calls Claude (`claude-sonnet-4-6`)
+- Loading state: spinner with "Analyzing your week..."
+- On success, displays:
+  - Status badge: on track / slightly behind / behind / ahead
+  - 2-3 sentence summary of the week
+  - List of adjustments with week number, field changed, old/new value, and reason
+  - Coach's note in a highlighted terracotta callout
+- Automatically applies adjustments to `training_plan` rows in Supabase via `PATCH /api/exercise-tracker/plan-update`
+- Records the event in `recalibration_log`
+- Recalibrated weeks display a "Adjusted" badge in the training plan table
+
+Recalibration rules enforced by the AI prompt:
+- Never increase any week by more than 10% above its original planned miles
+- Never suggest more than 4 running days in any single week
+- Never suggest running and lifting on the same day
+- Taper weeks (21-24) are always protected, regardless of deficit
+
+### Recent Workouts
+- Table of the last 10 logged entries
+- Columns: Date, Type, Details (miles + pace for runs; lift day for lifts), Status
+- Completed rows shown at full opacity; skipped rows dimmed
+
+### 24-Week Training Plan Table
+- Full plan overview, one row per week
+- Sticky header
+- Current week highlighted with a terracotta background
+- Past weeks shown at reduced opacity with actual miles vs planned miles
+- Recalibrated weeks show an "Adjusted" badge in orange
+
+### Owner Access (PIN Gate)
+- A small **Owner** button sits in the top-right corner, visible to anyone but intentionally unobtrusive
+- Clicking it shows a centered modal overlay with a PIN input
+- PIN is compared against `NEXT_PUBLIC_TRACKER_PIN` (client-side)
+- Unlocked state stored in `sessionStorage` — only needs to be entered once per browser session
+- A key icon and "Owner" label appears in the corner when authenticated
+- Log and Recalibrate UI elements are hidden from public visitors entirely
+
+### Database Tables
+
+| Table | Columns |
+|-------|---------|
+| `training_plan` | week_number, week_start_date, phase, planned_runs (jsonb), planned_lifts (jsonb), target_weekly_miles, is_recalibrated, recalibration_notes |
+| `workout_logs` | log_date, week_number, workout_type, status, miles, pace, lift_day |
+| `recalibration_log` | week_number, summary_input, ai_response, adjustments_applied |
+
+All three tables have RLS enabled with public SELECT policies (anyone can read). Writes go through server-side API routes using the service role key.
 
 ---
 

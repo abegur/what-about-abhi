@@ -22,6 +22,7 @@ The full story behind why this exists is on the [What Is This?](/app/what-is-thi
 | `/insights` | Public analytics summary — PM-style narrative report |
 | `/what-is-this` | The honest story behind why this site exists |
 | `/dashboard` | Private analytics dashboard (password-protected) |
+| `/exercise-tracker` | Public half marathon training dashboard with PIN-gated workout logging |
 
 ---
 
@@ -38,6 +39,7 @@ The full story behind why this exists is on the [What Is This?](/app/what-is-thi
 | [Recharts](https://recharts.org) | Charts in the private analytics dashboard |
 | [Claude AI](https://www.anthropic.com) | AI collaborator for design, code, and AI insights |
 | [Vercel](https://vercel.com) | Deployment and edge hosting |
+| [Anthropic Claude](https://www.anthropic.com) | AI recalibration coach for the exercise tracker |
 
 ---
 
@@ -64,10 +66,19 @@ app/
   insights/page.tsx     # Public analytics narrative
   dashboard/page.tsx    # Private analytics dashboard
   what-is-this/page.tsx # Meta page
+  exercise-tracker/
+    page.tsx                   # Training dashboard (public + PIN-gated owner actions)
+    types.ts                   # TypeScript interfaces + shared utilities
+    components/                # All exercise tracker components
   api/
-    track/route.ts      # POST: write analytics events to Supabase
-    analytics/route.ts  # GET: aggregate events (protected)
-    insights/route.ts   # GET/POST: AI-generated insights cache
+    track/route.ts             # POST: write analytics events to Supabase
+    analytics/route.ts         # GET: aggregate events (protected)
+    insights/route.ts          # GET/POST: AI-generated insights cache
+    recalibrate/route.ts       # POST: AI recalibration via Claude
+    exercise-tracker/
+      data/route.ts            # GET: training plan + workout logs
+      log/route.ts             # POST: insert workout log entry
+      plan-update/route.ts     # PATCH: apply AI adjustments to training plan
 components/
   home/                 # Hero, Currently widget
   experience/           # Timeline
@@ -163,6 +174,40 @@ The paused state persists across tabs and page refreshes via `localStorage`. You
 localStorage.setItem('ab_tracking_paused', 'true')   // pause
 localStorage.setItem('ab_tracking_paused', 'false')  // resume
 ```
+
+---
+
+## Exercise Tracker
+
+The `/exercise-tracker` page is a self-contained half marathon training dashboard targeting the Monterey Half Marathon on November 8, 2026.
+
+### Setup
+
+1. Run the Supabase migration to create the three tables and seed the 24-week plan:
+   - Open the [Supabase SQL editor](https://supabase.com/dashboard/project/_/sql)
+   - Paste the contents of `supabase/migrations/20260525000000_exercise_tracker.sql` and run it
+
+2. Add the following to `.env.local`:
+   ```
+   NEXT_PUBLIC_TRACKER_PIN=yourpin
+   ```
+   `ANTHROPIC_API_KEY` is already required for the AI insights feature and is reused here.
+
+### Owner Access
+
+The page is publicly readable. To log workouts or trigger recalibration, click the small **Owner** link in the top-right corner and enter the PIN. The unlocked state persists for the browser session via `sessionStorage`.
+
+### AI Recalibration
+
+At the end of each training week (after logging at least 3 workouts), click **Recalibrate My Plan**. The page sends the week's performance data to Claude, which returns a JSON adjustment plan. The client automatically applies the changes to the `training_plan` table and records the event in `recalibration_log`.
+
+### Database Tables
+
+| Table | Purpose |
+|-------|---------|
+| `training_plan` | 24-week plan with planned runs and lifts per week |
+| `workout_logs` | Every run and lift logged by the owner |
+| `recalibration_log` | History of every AI recalibration event |
 
 ---
 
