@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { log_date, week_number, workout_type, status, miles, pace, lift_day } = body
+  const { log_date, week_number, workout_type, status, miles, pace, lift_day, run_type } = body
 
   if (!log_date || !week_number || !workout_type || !status) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -34,6 +34,7 @@ export async function POST(req: Request) {
     miles: miles ?? null,
     pace: pace ?? null,
     lift_day: lift_day ?? null,
+    run_type: run_type ?? null,
   })
 
   if (error) {

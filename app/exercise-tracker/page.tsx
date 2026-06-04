@@ -165,7 +165,7 @@ export default function ExerciseTrackerPage() {
               />
             )}
             <MileageChart trainingPlan={trainingPlan} workoutLogs={workoutLogs} />
-            <RecentLogs workoutLogs={workoutLogs} isUnlocked={isUnlocked} onUpdate={fetchData} />
+            <RecentLogs trainingPlan={trainingPlan} workoutLogs={workoutLogs} isUnlocked={isUnlocked} onUpdate={fetchData} />
             <TrainingPlanTable trainingPlan={trainingPlan} workoutLogs={workoutLogs} />
           </div>
         )}

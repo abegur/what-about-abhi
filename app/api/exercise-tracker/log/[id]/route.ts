@@ -17,7 +17,7 @@ export async function PATCH(
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { log_date, status, miles, pace, lift_day } = body
+  const { log_date, status, miles, pace, lift_day, run_type } = body
 
   const patch: Record<string, unknown> = {}
   if (log_date !== undefined) patch.log_date = log_date
@@ -25,6 +25,7 @@ export async function PATCH(
   if (miles !== undefined) patch.miles = miles
   if (pace !== undefined) patch.pace = pace
   if (lift_day !== undefined) patch.lift_day = lift_day
+  if (run_type !== undefined) patch.run_type = run_type
 
   const { error } = await supabaseAdmin
     .from('workout_logs')

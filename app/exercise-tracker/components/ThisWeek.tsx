@@ -29,11 +29,12 @@ const RUN_TYPE_LABELS: Record<string, string> = {
 }
 
 function runStatus(run: PlannedRun, weekLogs: WorkoutLog[]): { status: SessionStatus; log?: WorkoutLog } {
-  const dayIdx = DAY_INDEX[run.day]
   const match = weekLogs.find((l) => {
     if (l.workout_type !== 'run') return false
+    if (l.run_type) return l.run_type === run.type
+    // fallback for logs created before run_type was added
     const logDate = parseLocalDate(l.log_date)
-    return logDate.getDay() === dayIdx
+    return logDate.getDay() === DAY_INDEX[run.day]
   })
   if (!match) return { status: 'planned' }
   return { status: match.status as SessionStatus, log: match }
@@ -223,6 +224,7 @@ export default function ThisWeek({ trainingPlan, workoutLogs, isUnlocked, onLog 
       {showRunForm && (
         <LogRunForm
           weekNumber={currentWeek.week_number}
+          plannedRuns={currentWeek.planned_runs}
           onSubmit={handleLogSubmit}
           onClose={() => setShowRunForm(false)}
         />

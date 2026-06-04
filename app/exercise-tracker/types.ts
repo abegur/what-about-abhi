@@ -35,6 +35,7 @@ export interface WorkoutLog {
   miles: number | null
   pace: string | null
   lift_day: string | null
+  run_type: string | null
   created_at: string
 }
 

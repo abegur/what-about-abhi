@@ -4,41 +4,69 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import type { PlannedRun } from '../types'
+
+const RUN_TYPE_LABELS: Record<string, string> = {
+  easy: 'Easy Run',
+  tempo: 'Tempo Run',
+  long: 'Long Run',
+  race_pace: 'Race Pace',
+}
 
 interface InitialValues {
   date: string
   status: 'completed' | 'skipped'
   miles: string
   pace: string
+  runType?: string
 }
 
 interface Props {
   weekNumber: number
+  plannedRuns?: PlannedRun[]
   onSubmit: () => void
   onClose: () => void
-  logId?: string           // present in edit mode
+  logId?: string
   initialValues?: InitialValues
 }
 
-const PACE_REGEX = /^\d{1,2}:\d{2}$/
+function parsePace(pace: string): { min: string; sec: string } {
+  const [min = '', sec = ''] = pace.split(':')
+  return { min, sec }
+}
 
-export default function LogRunForm({ weekNumber, onSubmit, onClose, logId, initialValues }: Props) {
+export default function LogRunForm({ weekNumber, plannedRuns, onSubmit, onClose, logId, initialValues }: Props) {
   const today = new Date().toISOString().split('T')[0]
   const isEdit = !!logId
 
+  const initPace = parsePace(initialValues?.pace ?? '')
+
   const [date, setDate] = useState(initialValues?.date ?? today)
   const [miles, setMiles] = useState(initialValues?.miles ?? '')
-  const [pace, setPace] = useState(initialValues?.pace ?? '')
-  const [status, setStatus] = useState<'completed' | 'skipped'>(initialValues?.status ?? 'completed')
+  const [paceMin, setPaceMin] = useState(initPace.min)
+  const [paceSec, setPaceSec] = useState(initPace.sec)
   const [paceError, setPaceError] = useState(false)
+  const [runType, setRunType] = useState(initialValues?.runType ?? '')
+  const [status, setStatus] = useState<'completed' | 'skipped'>(initialValues?.status ?? 'completed')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const buildPace = (): string | null => {
+    if (!paceMin) return null
+    const sec = paceSec.padStart(2, '0')
+    return `${paceMin}:${sec}`
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (status === 'completed' && pace && !PACE_REGEX.test(pace)) {
-      setPaceError(true)
-      return
+
+    if (status === 'completed' && paceMin) {
+      const min = parseInt(paceMin, 10)
+      const sec = parseInt(paceSec || '0', 10)
+      if (isNaN(min) || min < 1 || min > 99 || isNaN(sec) || sec < 0 || sec > 59) {
+        setPaceError(true)
+        return
+      }
     }
 
     setSubmitting(true)
@@ -50,13 +78,12 @@ export default function LogRunForm({ weekNumber, onSubmit, onClose, logId, initi
       workout_type: 'run',
       status,
       miles: status === 'completed' ? parseFloat(miles) || null : null,
-      pace: status === 'completed' && pace ? pace : null,
+      pace: status === 'completed' ? buildPace() : null,
+      run_type: runType || null,
     }
 
     try {
-      const url = isEdit
-        ? `/api/exercise-tracker/log/${logId}`
-        : '/api/exercise-tracker/log'
+      const url = isEdit ? `/api/exercise-tracker/log/${logId}` : '/api/exercise-tracker/log'
       const method = isEdit ? 'PATCH' : 'POST'
 
       const res = await fetch(url, {
@@ -114,6 +141,35 @@ export default function LogRunForm({ weekNumber, onSubmit, onClose, logId, initi
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Run type selector */}
+            {plannedRuns && plannedRuns.length > 0 && (
+              <div>
+                <p className="text-[11px] text-warm/40 tracking-widest uppercase mb-2">Which Run</p>
+                <div className="space-y-2">
+                  {plannedRuns.map((run) => {
+                    const selected = runType === run.type
+                    return (
+                      <button
+                        key={run.type}
+                        type="button"
+                        onClick={() => setRunType(run.type)}
+                        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm transition-colors duration-200 border ${
+                          selected
+                            ? 'bg-terracotta/10 text-terracotta border-terracotta/30'
+                            : 'bg-background border-warm/10 text-warm/50 hover:border-warm/20'
+                        }`}
+                      >
+                        <span className="font-medium">{RUN_TYPE_LABELS[run.type] ?? run.type}</span>
+                        <span className={`text-xs ${selected ? 'text-terracotta/70' : 'text-warm/30'}`}>
+                          {run.miles} mi · {run.pace_zone}/mi
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Status toggle */}
             <div>
               <p className="text-[11px] text-warm/40 tracking-widest uppercase mb-2">Status</p>
@@ -166,21 +222,38 @@ export default function LogRunForm({ weekNumber, onSubmit, onClose, logId, initi
                   />
                 </div>
 
-                {/* Pace */}
+                {/* Pace — split MM and SS */}
                 <div>
                   <p className="text-[11px] text-warm/40 tracking-widest uppercase mb-2">Pace per mile (MM:SS)</p>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={pace}
-                    onChange={(e) => { setPace(e.target.value); setPaceError(false) }}
-                    placeholder="9:45"
-                    className={`w-full bg-background border rounded-xl px-4 py-3.5 text-warm placeholder-warm/25 outline-none text-base transition-colors duration-200 ${
-                      paceError ? 'border-red-500/50' : 'border-warm/10 focus:border-terracotta/50'
-                    }`}
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min="1"
+                      max="99"
+                      value={paceMin}
+                      onChange={(e) => { setPaceMin(e.target.value); setPaceError(false) }}
+                      placeholder="9"
+                      className={`flex-1 bg-background border rounded-xl px-4 py-3.5 text-warm placeholder-warm/25 outline-none text-base transition-colors duration-200 ${
+                        paceError ? 'border-red-500/50' : 'border-warm/10 focus:border-terracotta/50'
+                      }`}
+                    />
+                    <span className="text-warm/40 text-lg font-light select-none">:</span>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min="0"
+                      max="59"
+                      value={paceSec}
+                      onChange={(e) => { setPaceSec(e.target.value); setPaceError(false) }}
+                      placeholder="45"
+                      className={`flex-1 bg-background border rounded-xl px-4 py-3.5 text-warm placeholder-warm/25 outline-none text-base transition-colors duration-200 ${
+                        paceError ? 'border-red-500/50' : 'border-warm/10 focus:border-terracotta/50'
+                      }`}
+                    />
+                  </div>
                   {paceError && (
-                    <p className="text-red-400/70 text-xs mt-1.5">Format must be MM:SS (e.g. 9:45)</p>
+                    <p className="text-red-400/70 text-xs mt-1.5">Invalid pace — minutes 1–99, seconds 0–59</p>
                   )}
                 </div>
               </>

@@ -2,11 +2,19 @@
 // RecentLogs.tsx — Last 10 workout logs with owner edit and delete actions.
 
 import { useState } from 'react'
-import type { WorkoutLog } from '../types'
+import type { WorkoutLog, TrainingPlan } from '../types'
 import LogRunForm from './LogRunForm'
 import LogLiftForm from './LogLiftForm'
 
+const RUN_TYPE_LABELS: Record<string, string> = {
+  easy: 'Easy Run',
+  tempo: 'Tempo Run',
+  long: 'Long Run',
+  race_pace: 'Race Pace',
+}
+
 interface Props {
+  trainingPlan: TrainingPlan[]
   workoutLogs: WorkoutLog[]
   isUnlocked: boolean | null
   onUpdate: () => void
@@ -21,7 +29,7 @@ function formatDate(dateStr: string): string {
   })
 }
 
-export default function RecentLogs({ workoutLogs, isUnlocked, onUpdate }: Props) {
+export default function RecentLogs({ trainingPlan, workoutLogs, isUnlocked, onUpdate }: Props) {
   const [editingLog, setEditingLog] = useState<WorkoutLog | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
@@ -67,11 +75,12 @@ export default function RecentLogs({ workoutLogs, isUnlocked, onUpdate }: Props)
             const completed = log.status === 'completed'
             const isConfirmingDelete = confirmDeleteId === log.id
 
+            const runLabel = log.run_type ? RUN_TYPE_LABELS[log.run_type] ?? log.run_type : null
             const details =
               log.workout_type === 'run'
                 ? completed && log.miles
-                  ? `${log.miles} mi${log.pace ? ` · ${log.pace}/mi` : ''}`
-                  : 'Skipped'
+                  ? [runLabel, `${log.miles} mi`, log.pace ? `${log.pace}/mi` : null].filter(Boolean).join(' · ')
+                  : runLabel ? `${runLabel} · Skipped` : 'Skipped'
                 : completed
                 ? `Day ${log.lift_day}`
                 : 'Skipped'
@@ -162,11 +171,13 @@ export default function RecentLogs({ workoutLogs, isUnlocked, onUpdate }: Props)
         <LogRunForm
           weekNumber={editingLog.week_number}
           logId={editingLog.id}
+          plannedRuns={trainingPlan.find((w) => w.week_number === editingLog.week_number)?.planned_runs ?? []}
           initialValues={{
             date: editingLog.log_date,
             status: editingLog.status,
             miles: editingLog.miles != null ? String(editingLog.miles) : '',
             pace: editingLog.pace ?? '',
+            runType: editingLog.run_type ?? '',
           }}
           onSubmit={handleEditSubmit}
           onClose={handleEditClose}
