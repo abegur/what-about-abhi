@@ -185,11 +185,13 @@ Four KPI cards matching the site's dashboard card style:
 
 ### Log Run Form
 Inline form (owner only). Fields:
+- Run selector: buttons for each planned run this week (type label, target miles, pace zone) — owner picks which run they completed
 - Status toggle: Completed or Skipped
 - Date picker (defaults to today)
 - Miles (decimal, step 0.1)
-- Pace input (MM:SS format, validated client-side)
+- Pace: two separate numeric inputs (minutes and seconds) separated by a colon — avoids the mobile keyboard colon problem
 - Hides miles and pace fields when status is Skipped
+- The selected run type is stored on the log and used to match session cards in This Week
 
 ### Log Lift Form
 Inline form (owner only). Fields:
@@ -217,10 +219,17 @@ Inline form (owner only). Fields:
 - Recalibrated weeks display a "Adjusted" badge in the training plan table
 
 Recalibration rules enforced by the AI prompt:
+- Default is no changes — an empty adjustments array is the preferred response for minor deviations
+- Only adjusts if total miles are below 60% of target AND a key session (long run or tempo) was missed; skipping a single easy run does not trigger changes
+- Early weeks (1-8): minor deficits are not penalized, as base-building tolerates small misses
+- When adjustments are needed, touch as few future weeks as possible
 - Never increase any week by more than 10% above its original planned miles
 - Never suggest more than 4 running days in any single week
 - Never suggest running and lifting on the same day
 - Taper weeks (21-24) are always protected, regardless of deficit
+- If ahead of plan: return on_track, no changes
+
+Server-side guard: the plan-update API rejects any adjustment targeting the current or a past week, regardless of what the AI returns. Only strictly future weeks can be modified.
 
 ### Recent Workouts
 - Table of the last 10 logged entries
@@ -247,7 +256,7 @@ Recalibration rules enforced by the AI prompt:
 | Table | Columns |
 |-------|---------|
 | `training_plan` | week_number, week_start_date, phase, planned_runs (jsonb), planned_lifts (jsonb), target_weekly_miles, is_recalibrated, recalibration_notes |
-| `workout_logs` | log_date, week_number, workout_type, status, miles, pace, lift_day |
+| `workout_logs` | log_date, week_number, workout_type, status, miles, pace, lift_day, run_type |
 | `recalibration_log` | week_number, summary_input, ai_response, adjustments_applied |
 
 All three tables have RLS enabled with public SELECT policies (anyone can read). Writes go through server-side API routes using the service role key.

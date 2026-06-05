@@ -31,6 +31,8 @@ export async function PATCH(req: Request) {
 
   // Apply each adjustment to the relevant training_plan row
   for (const update of updates) {
+    if (update.weekNumber <= weekNumber) continue  // never touch current or past weeks
+
     const patch: Record<string, unknown> = {
       updated_at: new Date().toISOString(),
       is_recalibrated: true,
